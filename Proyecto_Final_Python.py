@@ -225,9 +225,5 @@ def menu_cine():
                     print(f"Hay {asientos_libres} asientos libres en esta sala y {asientos_ocupados} ocupados, lo que equivale a un {porcentaje_de_ocupacion}% de ocupacion")
             else:
                 print('\n Ese dia no es valido')                
-                            
-                    
-        
-        break
    
 menu_cine()
