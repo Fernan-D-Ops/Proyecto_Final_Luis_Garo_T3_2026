@@ -78,7 +78,7 @@ def menu_cine():
    |El mejor cine del caribe.|
    ---------------------------
 
-   1. Ver Cartelera
+   1. Ver Cartelera de un día
    2. Mostrar asientos de una funcion
    3. Reservar asientos
    4. Cancelar asientos
@@ -92,7 +92,7 @@ def menu_cine():
 
         if opcion == 1:
             dia_seleccionado = input("De que dia desea ver la catelera? ").title()
-            print ("\n --- Esta es la cartelera del dia seleccionado --- ")
+            print (f"\n --- Esta es la cartelera del {dia_seleccionado} --- ")
             for proyeccion in cartelera[dia_seleccionado]:
                print(f"{proyeccion['pelicula']}, Sala {(proyeccion['sala'])}, {proyeccion['horario']}, {proyeccion['formato']} ")
             
@@ -136,7 +136,18 @@ def menu_cine():
                         if proyeccion["asientos"][indice_fila][indice_columna] == ".": #Evaluamos que el asiento este disponible
                             proyeccion["asientos"][indice_fila][indice_columna] = "X" #Si esta disponible lo reservamos con X
                             print(f"\nSe ha reservado el asiento {reserva_asiento} con exito!")
-                            break
+                            nueva_reserva = input(f"\n Desea reservar un nuevo asiento? ")
+                            nueva_reserva = (
+                            nueva_reserva == "si"
+                            or nueva_reserva == "s"
+                            or nueva_reserva == "sí"
+                            or nueva_reserva == "y"
+                            or nueva_reserva == "yes"
+                                )
+                            if nueva_reserva:
+                                continue
+                            else:
+                                break
                         else: #En caso de que el asiento este reservado le damos la opcion al usuario de intentar elegiendo un nuevo asiento
                             print(f"\n Lo sentimos el asiento {reserva_asiento} no esta disponible")
                             intento_reserva = input(f"\n Desea continuar la reserva con un nuevo asiento? ")
@@ -191,9 +202,32 @@ def menu_cine():
                         else:
                             break
                     break    
-            #Aqui el tema de la cancelacion de las reservas
+            
         elif opcion == 5:
-            break
-        else:
-            print ("Gracias por preferinos, regrese pronto! ")
+            dia_seleccionado = input("De que dia desea saber la disponibilidad? ").title() 
+            print (f"\n --- Esta es la disponibilidad del {dia_seleccionado}  --- ")
+            if dia_seleccionado in cartelera:
+
+                for proyeccion in cartelera[dia_seleccionado]:
+                    asientos_libres = 0
+                    asientos_ocupados = 0
+                    print(f"Sala {(proyeccion['sala'])}, {proyeccion['horario']}")
+                    for fila_asientos in proyeccion["asientos"]:
+                        for asientos_individuales in fila_asientos:
+                            if asientos_individuales == ".": 
+                                asientos_libres += 1
+                            elif asientos_individuales == "X":  
+                                asientos_ocupados += 1
+                            else:
+                                break
+                    total_asientos = asientos_libres + asientos_ocupados
+                    porcentaje_de_ocupacion = (asientos_ocupados * 100) // total_asientos 
+                    print(f"Hay {asientos_libres} asientos libres en esta sala y {asientos_ocupados} ocupados, lo que equivale a un {porcentaje_de_ocupacion}% de ocupacion")
+            else:
+                print('\n Ese dia no es valido')                
+                            
+                    
+        
+        break
+   
 menu_cine()
