@@ -71,6 +71,14 @@ for dia in cartelera:
 dia_seleccionado =""
 intentos = 0
 
+def preguntar_continuar(accion_personalizada): # Para evitar repetir codigo utilizaremos esta funcion
+    respuesta = input(f"\n¿Desea volver al menú principal (1) o {accion_personalizada} (2)? ")
+    
+    if respuesta == "1":
+        return False # Falso: No quiere continuar aquí, quiere volver al menú
+    else:
+        return True  # Verdadero: Quiere repetir la opción actual
+
 def menu_cine():
     print ("""
    ---------------------------
@@ -88,30 +96,41 @@ def menu_cine():
 
     while True:
       
-        opcion = int(input("En que podemos ayudarlo hoy? "))
+        opcion = int(input("\n En que podemos ayudarlo hoy? "))
 
         if opcion == 1:
-            dia_seleccionado = input("De que dia desea ver la catelera? ").title()
-            print (f"\n --- Esta es la cartelera del {dia_seleccionado} --- ")
-            for proyeccion in cartelera[dia_seleccionado]:
-               print(f"{proyeccion['pelicula']}, Sala {(proyeccion['sala'])}, {proyeccion['horario']}, {proyeccion['formato']} ")
+            while True:
+                dia_seleccionado = input("De que dia desea ver la catelera? ").title()
+                if dia_seleccionado in cartelera:
+                    print (f"\n --- Esta es la cartelera del {dia_seleccionado} --- ")
+                    for proyeccion in cartelera[dia_seleccionado]:
+                        print(f"{proyeccion['pelicula']}, Sala {(proyeccion['sala'])}, {proyeccion['horario']}, {proyeccion['formato']} ")
+                    if preguntar_continuar("Consultar la cartelera de otro dia"):
+                        continue
+                    else:
+                       break 
+                else:
+                    print("\n Este dia no es valido, favor de intentarlo nuevamente")
             
         elif opcion == 2:
-            dia_seleccionado = input("Para que dia desea visualizar los asientos? ").title()
-            existencia_sala = int(input("Cual sala desea validar? "))
-            existencia_horario = input("Que horario desea validar? ")
+            while True:
+                dia_seleccionado = input("Para que dia desea visualizar los asientos? ").title()
+                existencia_sala = int(input("Cual sala desea validar? "))
+                existencia_horario = input("Que horario desea validar? ")
 
-            for proyeccion in cartelera[dia_seleccionado]:
-                if proyeccion["sala"] == existencia_sala and proyeccion["horario"] == existencia_horario:
-                    print("  1   2   3   4   5   6") # Filas de asientos
-                    indice = 0 # Gracias a esta vareable recorremos la lista de letras, para utilizarla en los asientos
-                    letras = ["A", "B", "C", "D", "E"]
-                    for asientos in proyeccion["asientos"]:
-                        print(f"{letras[indice]} {'   '.join(asientos)}") # Unimos la variable 'asientos' separada por un espacio
-                        indice +=1 # Le sumamos 1 al índice para que la siguiente vuelta use la próxima letra
-
+                for proyeccion in cartelera[dia_seleccionado]:
+                    if proyeccion["sala"] == existencia_sala and proyeccion["horario"] == existencia_horario:
+                        print("  1   2   3   4   5   6") # Filas de asientos
+                        indice = 0 # Gracias a esta vareable recorremos la lista de letras, para utilizarla en los asientos
+                        letras = ["A", "B", "C", "D", "E"]
+                        for asientos in proyeccion["asientos"]:
+                            print(f"{letras[indice]} {'   '.join(asientos)}") # Unimos la variable 'asientos' separada por un espacio
+                            indice +=1 # Le sumamos 1 al índice para que la siguiente vuelta use la próxima letra
+                    
+                if preguntar_continuar("Visualizar los asientos de otro dia"):
+                    continue
                 else:
-                    break  
+                     break   
             
 
         elif opcion == 3:
@@ -136,32 +155,13 @@ def menu_cine():
                         if proyeccion["asientos"][indice_fila][indice_columna] == ".": #Evaluamos que el asiento este disponible
                             proyeccion["asientos"][indice_fila][indice_columna] = "X" #Si esta disponible lo reservamos con X
                             print(f"\nSe ha reservado el asiento {reserva_asiento} con exito!")
-                            nueva_reserva = input(f"\n Desea reservar un nuevo asiento? ")
-                            nueva_reserva = (
-                            nueva_reserva == "si"
-                            or nueva_reserva == "s"
-                            or nueva_reserva == "sí"
-                            or nueva_reserva == "y"
-                            or nueva_reserva == "yes"
-                                )
-                            if nueva_reserva:
-                                continue
-                            else:
-                                break
-                        else: #En caso de que el asiento este reservado le damos la opcion al usuario de intentar elegiendo un nuevo asiento
+                        else: #En caso de que el asiento este reservado se lo indicamos al usuario
                             print(f"\n Lo sentimos el asiento {reserva_asiento} no esta disponible")
-                            intento_reserva = input(f"\n Desea continuar la reserva con un nuevo asiento? ")
-                            intento_reserva = (
-                            intento_reserva == "si"
-                            or intento_reserva == "s"
-                            or intento_reserva == "sí"
-                            or intento_reserva == "y"
-                            or intento_reserva == "yes"
-                                )
-                        if intento_reserva:
+                        if preguntar_continuar("Volver al menu de reservas"):
                             continue
                         else:
                             break
+                        
                     break        
 
         elif opcion == 4:
@@ -186,44 +186,55 @@ def menu_cine():
                         if proyeccion["asientos"][indice_fila][indice_columna] == "X": #Evaluamos que el asiento este reservadp
                             proyeccion["asientos"][indice_fila][indice_columna] = "." #Si esta reservado lo colocamos disponible
                             print(f"\nSe ha cancelado la reserva del asiento {reserva_asiento} con exito!")
-                            break
                         else: 
                             print(f"\n Lo sentimos el asiento {reserva_asiento} no tiene una reserva la cual cancelar")
-                            cancelar_reserva = input(f"\n Desea continuar cancelar otra reserva? ")
-                            cancelar_reserva = (
-                            cancelar_reserva == "si"
-                            or cancelar_reserva == "s"
-                            or cancelar_reserva == "sí"
-                            or cancelar_reserva == "y"
-                            or cancelar_reserva == "yes"
-                                )
-                        if cancelar_reserva:
+                        if preguntar_continuar("Volver al menu de cancelaciones"):
                             continue
                         else:
-                            break
+                            break   
                     break    
             
         elif opcion == 5:
-            dia_seleccionado = input("De que dia desea saber la disponibilidad? ").title() 
-            print (f"\n --- Esta es la disponibilidad del {dia_seleccionado}  --- ")
-            if dia_seleccionado in cartelera:
+            while True:
+                dia_seleccionado = input("De que dia desea saber la disponibilidad? ").title() 
+                print (f"\n --- Esta es la disponibilidad del {dia_seleccionado}  --- ")
+                if dia_seleccionado in cartelera:
 
-                for proyeccion in cartelera[dia_seleccionado]:
-                    asientos_libres = 0
-                    asientos_ocupados = 0
-                    print(f"Sala {(proyeccion['sala'])}, {proyeccion['horario']}")
-                    for fila_asientos in proyeccion["asientos"]:
-                        for asientos_individuales in fila_asientos:
-                            if asientos_individuales == ".": 
-                                asientos_libres += 1
-                            elif asientos_individuales == "X":  
-                                asientos_ocupados += 1
-                            else:
-                                break
-                    total_asientos = asientos_libres + asientos_ocupados
-                    porcentaje_de_ocupacion = (asientos_ocupados * 100) // total_asientos 
-                    print(f"Hay {asientos_libres} asientos libres en esta sala y {asientos_ocupados} ocupados, lo que equivale a un {porcentaje_de_ocupacion}% de ocupacion")
-            else:
-                print('\n Ese dia no es valido')                
+                    for proyeccion in cartelera[dia_seleccionado]:
+                        asientos_libres = 0
+                        asientos_ocupados = 0
+                        print(f"Sala {(proyeccion['sala'])}, {proyeccion['horario']}")
+                        for fila_asientos in proyeccion["asientos"]:
+                            for asientos_individuales in fila_asientos:
+                                if asientos_individuales == ".": 
+                                    asientos_libres += 1
+                                elif asientos_individuales == "X":  
+                                    asientos_ocupados += 1
+                                else:
+                                    break
+                        total_asientos = asientos_libres + asientos_ocupados
+                        porcentaje_de_ocupacion = (asientos_ocupados * 100) // total_asientos 
+                        print(f"Hay {asientos_libres} asientos libres en esta sala y {asientos_ocupados} ocupados, lo que equivale a un {porcentaje_de_ocupacion}% de ocupacion")
+                        
+                else:
+                    print('\n Ese dia no es valido')
+                if preguntar_continuar("Consultar la disponibilidad de otro dia"):
+                    continue
+                else:
+                     break
+                
+
+        elif opcion == 6 :
+            print("\n Gracias por visitarnos, regreso pronto")
+            break
+
+        else:
+            print("Esa no es una opcion valida, favor de intentarlo nuevamente")
+            intentos += 1
+            continue
+
+    else:
+        print("Lo sentimos ha llegado al numero maximo de intentos")
+
    
 menu_cine()
