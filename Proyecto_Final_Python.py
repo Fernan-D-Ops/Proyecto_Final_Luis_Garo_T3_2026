@@ -67,17 +67,16 @@ for dia in cartelera:
         # A cada proyeccion le inyectamos una key nueva con su propia matriz de sala independiente.
         proyeccion["asientos"] = sala_vacia()
 
-#Variables que estaremos utilzando para almenar informacion:
-dia_seleccionado =""
-intentos = 0
 
 def preguntar_continuar(accion_personalizada): # Para evitar repetir codigo utilizaremos esta funcion
     respuesta = input(f"\n¿Desea volver al menú principal (1) o {accion_personalizada} (2)? ")
     
     if respuesta == "1":
         return False # Falso: No quiere continuar aquí, quiere volver al menú
+    elif respuesta == "2":
+        return True
     else:
-        return True  # Verdadero: Quiere repetir la opción actual
+        print("Opcion invalida, introduzca 1 o 2.") # Verdadero: Quiere repetir la opción actual
 
 def modulo_mostrar_asientos(dia_seleccionado=""): # Las opciones que teniamos en el menu del cine ahora son funciones, lo cual nos ayudara a manejar mejor el programa.
 
@@ -107,10 +106,13 @@ def modulo_mostrar_asientos(dia_seleccionado=""): # Las opciones que teniamos en
                 for asientos in proyeccion["asientos"]:
                     print(f"{letras[indice]} {'   '.join(asientos)}") # Unimos la variable 'asientos' separada por un espacio
                     indice +=1 # Le sumamos 1 al índice para que la siguiente vuelta use la próxima letra
+                print(f"\nPelícula: {proyeccion['pelicula']}") # Prints de los datos de la pelicula para seleccionar asientos
+                print(f"Formato: {proyeccion['formato']}")
+                print(f"Sala: {proyeccion['sala']}")
+                print(f"Horario: {proyeccion['horario']}")
 
         if not sala_encontrada:
             print("\n Los datos introducidos son incorrectos.")
-                        
         if preguntar_continuar("Visualizar los asientos de otro dia"):
             dia_seleccionado = ""
             continue
@@ -166,6 +168,9 @@ def modulo_reservas(dia_seleccionado=""):
                     if proyeccion["asientos"][indice_fila][indice_columna] == ".": #Evaluamos que el asiento este disponible
                         proyeccion["asientos"][indice_fila][indice_columna] = "X" #Si esta disponible lo reservamos con X
                         print(f"\nSe ha reservado el asiento {reserva_asiento} con exito!")
+                        print(f"Película: {proyeccion['pelicula']}")
+                        print(f"Formato: {proyeccion['formato']}")
+                        break
                     else: #En caso de que el asiento este reservado se lo indicamos al usuario
                         print(f"\n Lo sentimos el asiento {reserva_asiento} no esta disponible")
 
@@ -200,11 +205,10 @@ def modulo_disponibilidad(dia_seleccionado=""):
                         asientos_libres += 1
                     elif asientos_individuales == "X":  
                         asientos_ocupados += 1
-                    else:
-                        break
+                    
             total_asientos = asientos_libres + asientos_ocupados
-            porcentaje_de_ocupacion = (asientos_ocupados * 100) // total_asientos 
-            print(f"Hay {asientos_libres} asientos libres en esta sala y {asientos_ocupados} ocupados, lo que equivale a un {porcentaje_de_ocupacion}% de ocupacion")
+            porcentaje_de_ocupacion = (asientos_ocupados * 100) / total_asientos 
+            print(f"Hay {asientos_libres} asientos libres en esta sala y {asientos_ocupados} ocupados, lo que equivale a un {porcentaje_de_ocupacion:.2f}% de ocupacion")
                             
                 
         if preguntar_continuar("Consultar la disponibilidad de otro dia"):
@@ -256,16 +260,19 @@ def modulo_cancelar_reservas(dia_seleccionado=""):
                     if int(reserva_columna) < 1 or int(reserva_columna) > 6 : # Validamos que la columna sea existente basado en la cantidad que tenemos
                         print("Columna invalida.")
                         continue
+                    indice_columna = int(reserva_columna) - 1
                     indice_fila = letras.index(reserva_fila) #Con .index buscamos un elemento exacto dentro de la lista "letras" ["A","B" ...] y esto nos da como resultado su indice eje: A = 0
                     if proyeccion["asientos"][indice_fila][indice_columna] == "X": #Evaluamos que el asiento este reservadp
                         proyeccion["asientos"][indice_fila][indice_columna] = "." #Si esta reservado lo colocamos disponible
                         print(f"\nSe ha cancelado la reserva del asiento {reserva_asiento} con exito!")
+                        break
                     else: 
                         print(f"\n Lo sentimos el asiento {reserva_asiento} no tiene una reserva la cual cancelar")
 
         if not sala_encontrada:
             print("\n Los datos introducidos son incorrectos.")   
         if preguntar_continuar("Volver al menu de cancelaciones"):
+            dia_seleccionado =""
             continue
         else:
             break           
@@ -285,13 +292,15 @@ def menu_cine():
    6. Salir
    """)
 
-    while intentos <= 3:
-      
-        opcion = int(input("\n En que podemos ayudarlo hoy? "))
-
+    while True:
+        try:
+            opcion = int(input("\n En que podemos ayudarlo hoy? "))
+        except ValueError:
+            print("Debe introducir un numero.")
+            continue
         if opcion == 1:
             while True:
-                dia_seleccionado = input("De que dia desea ver la catelera? ").title()
+                dia_seleccionado = input("De que dia desea ver la cartelera? ").title()
                 if dia_seleccionado in cartelera:
                     print (f"\n --- Esta es la cartelera del {dia_seleccionado} --- ")
                     for proyeccion in cartelera[dia_seleccionado]:
@@ -300,7 +309,7 @@ def menu_cine():
                     print(f"(1) Reservar un asiento para el dia seleccionado({dia_seleccionado})")  
                     print("(2) Consultar la cartelera de otro dia")  
                     print(f"(3) Mostrar asientos de las funciones del dia seleccionado({dia_seleccionado})")
-                    print(f"(4) Ver la dispinibilidad en el dia seleccionado({dia_seleccionado})")
+                    print(f"(4) Ver la disponibilidad en el dia seleccionado({dia_seleccionado})")
                     accion = input("Elija una opcion: ")
 
                     if accion == "1":
@@ -340,10 +349,6 @@ def menu_cine():
 
         else:
             print("Esa no es una opcion valida, favor de intentarlo nuevamente")
-            intentos += 1
             continue
-
-    else:
-        print("Lo sentimos ha llegado al numero maximo de intentos")
   
 menu_cine()
