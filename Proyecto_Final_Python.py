@@ -310,6 +310,7 @@ def menu_cine():
                     print("(2) Consultar la cartelera de otro dia")  
                     print(f"(3) Mostrar asientos de las funciones del dia seleccionado({dia_seleccionado})")
                     print(f"(4) Ver la disponibilidad en el dia seleccionado({dia_seleccionado})")
+                    print("(5) Volver al menu principal")
                     accion = input("Elija una opcion: ")
 
                     if accion == "1":
@@ -325,6 +326,8 @@ def menu_cine():
                     elif accion == "4":
                         modulo_disponibilidad(dia_seleccionado)
                     #Aqui tengo que colocar la funcion de Ver disponibilidad
+                    elif accion == "5":
+                        break
 
                     else:
                         print("Opcion invalida.")
